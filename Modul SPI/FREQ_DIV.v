@@ -3,7 +3,7 @@ module FREQ_DIV(SCK, CLK, SCK_ENABLE, DIV, C_POL);
 	
 	input CLK, SCK_ENABLE, DIV, C_POL;
 	
-	reg [7:0] COUNT;
+	reg [7:0] COUNT = 0;
 	
 	always @(posedge CLK)
 		if(~SCK_ENABLE)
@@ -14,7 +14,8 @@ module FREQ_DIV(SCK, CLK, SCK_ENABLE, DIV, C_POL);
 		else 
 			begin
 				COUNT <= 0;
-				SCK <= 1'bz;
+				SCK <= C_POL;
+			//	SCK <= 1'bz;
 			end
 
 endmodule 			
