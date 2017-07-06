@@ -7,6 +7,7 @@ module SIPO(PAR_OUT, CLK, DATA_IN, C_PH);
 	reg [D_Pack - 1:0] par_pos, par_neg;
 	
 	parameter D_Pack = 8;
+	parameter TEMP = 0;
 	
 	integer index_pos = 0;
 	integer index_neg = 0;
@@ -35,7 +36,7 @@ module SIPO(PAR_OUT, CLK, DATA_IN, C_PH);
 			end
 	end
 	
-	assign PAR_OUT = C_PH ? temp_neg : temp_pos;
+	assign PAR_OUT = TEMP ? temp_neg : temp_pos;
 /*	always @(posedge CLK)
 	begin
 		if(~C_PH)

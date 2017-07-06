@@ -19,19 +19,19 @@ module SPI(SCK, SS, MOSI, MISO, BUSY, CLOCK, RST, ENABLE, C_POL, C_PH, CLK_DIV, 
 	begin
 		case(state)
 			RST_state: state <= RST ? IDLE_state : RST_state;
-			IDLE_state: begin state <= RST ? IDLE_state : RST_state;
-									state <= ENABLE ? IDLE_state : RUNNING_state;
+			IDLE_state: begin state <= !RST ? RST_state : ENABLE ? IDLE_state : RUNNING_state;
+								//	state <= ENABLE ? IDLE_state : RUNNING_state;
 							end
-			RUNNING_state: begin state <= RST ? RUNNING_state : RST_state;
-										state <= ENABLE ? IDLE_state : RUNNING_state;
+			RUNNING_state: begin state <= !RST ? RST_state : ENABLE ? IDLE_state : RUNNING_state;
+								//		state <= ENABLE ? IDLE_state : RUNNING_state;
 								end
 			default: state <= IDLE_state;
 		endcase	
 	end
 	
 	assign SS = (state == RUNNING_state) ? ADDR : 1;
-	assign BUSY = ((state == RST_state) || (~SS)) ? 1 : 0;
-	assign SCK = (state == RST_state) ? SCK : 1'bz;
+	assign BUSY = ((state == RST_state) | (~SS)) ? 1 : 0;
+//	assign SCK = (state == RST_state) ? SCK : 1'bz;
 	
 	FREQ_DIV CLKM_1 (.SCK(SCK), .CLK(CLOCK), .SCK_ENABLE(SS), .DIV(CLK_DIV), .C_POL(C_POL));
 	PISO SR_1 (.SER_OUT(MOSI), .CLK(SCK), .DATA_IN(TX_DATA), .C_PH(C_PH), .ENABLE(ENABLE));
