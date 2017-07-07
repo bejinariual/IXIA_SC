@@ -17,10 +17,10 @@ module PISO(SER_OUT, CLK, DATA_IN, C_PH, ENABLE);
 		if(!ENABLE)
 		begin
 				ser_pos <= DATA_IN[index_pos];
-				if(index_pos > 0) 
-					index_pos <= index_pos - 1;
-				else
-					index_pos <= 7;
+				if(index_pos > 0) begin 
+					index_pos <= index_pos - 1; end
+				else begin
+					index_pos <= 7; end
 		end
 		else index_pos <= 7;
 	end
@@ -30,10 +30,10 @@ module PISO(SER_OUT, CLK, DATA_IN, C_PH, ENABLE);
 		if(!ENABLE)
 		begin
 			ser_neg <= DATA_IN[index_neg];
-			if(index_neg > 0)
-				index_neg <= index_neg - 1;
-			else
-				index_neg <= 7;
+			if(index_neg > 0) begin
+				index_neg <= index_neg - 1; end
+			else begin
+				index_neg <= 7; end
 		end 
 		else index_neg <= 7;
 	end			
