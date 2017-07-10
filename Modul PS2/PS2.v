@@ -1,10 +1,11 @@
 module PS2(RX_DATA, DATA_VALID, CLOCK, RESET, SDA, SCL);
+
+	parameter DP_size = 8; // Data Pack size parameter 
+
 	output reg [DP_size - 1:0] RX_DATA;
-	output DATA_VALID;
+	output reg DATA_VALID;
 	
 	input CLOCK, RESET, SDA, SCL;
-	
-	parameter DP_size = 8; // Data Pack size parameter 
 	
 	parameter	RST_state = 0,
 					IDLE_state = 1,
@@ -17,21 +18,33 @@ module PS2(RX_DATA, DATA_VALID, CLOCK, RESET, SDA, SCL);
 	reg valid;
 	
 	integer index = 0;
+	integer flag = 0;
 	
-	always @(negedge SCL)
+	always @(negedge SCL or negedge RESET)
+	begin
 		case(state)
-			RST_state: state <= RESET ? IDLE_state : RST_state;
-			IDLE_state: state <= ((!SDA) && RESET) ? RUNNING_state : RESET ? RST_state : IDLE_state;
+			RST_state:	begin 
+					state <= RESET ? IDLE_state : RST_state;
+					index <= 0;
+				  	end
+			IDLE_state: state <= ((~SDA) & RESET) ? RUNNING_state : RESET ? IDLE_state : RST_state;
 			RUNNING_state: begin 
-									RX_TEMP[index] = (index <= 7) ? SDA : RX_TEMP;
+									RX_TEMP[index] = (index < 8) ? SDA : RX_TEMP;
+									RX_DATA = (index == 7) ? RX_TEMP : RX_DATA;
+									parity = (index == 8) ? SDA : parity;
+									valid = ((^RX_DATA) == parity) ? 1 : 0;
+									state = (index == 9 & SDA & RESET) ? valid ? VALID_state : IDLE_state : RESET ? RUNNING_state : RST_state;
 									index = (index < 9) ? index + 1 : 0;
-									RX_DATA <= (index == 7) ? RX_TEMP : RX_DATA;
-									parity <= (index == 8) ? SDA : parity;
-									valid <= ((^RX_DATA) == parity) ? 1 : 0;
-									state <= (index == 9 && SDA) ? valid ? VALID_state : IDLE_state : IDLE_state;
 								end
 			VALID_state: state <= IDLE_state;
 			default: state <= IDLE_state;
 		endcase
-		
+	end
+	
+	always @(posedge CLOCK)
+	begin
+		DATA_VALID = ((state == VALID_state) & (~flag) & RESET) ? 1 : 0;
+		flag = DATA_VALID ? 1 : 0;
+	end
+				
 endmodule 
