@@ -33,8 +33,8 @@ module PS2(RX_DATA, DATA_VALID, CLOCK, RESET, SDA, SCL);
 									RX_DATA = (index == 7) ? RX_TEMP : RX_DATA;
 									parity = (index == 8) ? SDA : parity;
 									valid = ((^RX_DATA) == parity) ? 1 : 0;
-									index = (index < 9) ? index + 1 : 0;
 									state = (index == 9 & SDA & RESET) ? valid ? VALID_state : IDLE_state : RESET ? RUNNING_state : RST_state;
+									index = index + 1;
 								end
 			VALID_state: state <= IDLE_state;
 			default: state <= IDLE_state;
