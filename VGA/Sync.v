@@ -30,8 +30,8 @@ module Sync(H_Sync, V_Sync, Active_Zone, X_pos, Y_pos, CLOCK, RESET);
 		V_index = (H_index == 0 & RESET) ? (V_index < V_Total_Pixels - 1) ? V_index + 1 : 0 : RESET ? V_index : 0;
 	end
 	
-	assign X_pos = Active_Zone ? H_index : 10'bzzzzzzzzzz;
-	assign Y_pos = Active_Zone ? V_index : 10'bzzzzzzzzzz;
+	assign X_pos = Active_Zone ? H_index : 0;
+	assign Y_pos = Active_Zone ? V_index : 0;
 
 endmodule 
 	
